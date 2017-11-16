@@ -15,9 +15,8 @@
     <input name="Select Year" type="button" value="Select Year" onclick="Select()" />
     <input name="text" type="text"  id="text"/>
     <input name="AnimationButton" type="button" value="Show Me The Change From 1900 to 2016" onclick="Animation()" />
-    <input name="Stop" type="button" value="Stop!" onclick="Animation()" />
+    <input name="Stop" type="button" value="Stop!" onclick="stopRunning()" />
     
-   
 </div>
 
 
@@ -48,7 +47,10 @@ var svgForBar1 = d3.select("body").append("svg")
     .attr("height", 600)
     .attr("style","outline: 5px solid #630");
 
+
 var year = 1900;
+// to control the animation
+var keepRunning = true;
 
 var color = d3.scale.category10();
 // scale for gdp and xaxis
@@ -84,14 +86,23 @@ svg.append("g")
 
 // function for travel from 1900 - 2016
 function Animation(){
-  
-  for(var i=0;i<72;i++){
-    ChangeYear(1);
-    setInterval(1000);
-  }
+  keepRunning = true;
+  setInterval(function(){
+    if(keepRunning == true){
+      ChangeYear(1);
+    }
+    else{
+      return false;
+    }
+      
+  }, 1000);
+
   
 }
 
+function stopRunning(){
+  keepRunning = false;
+}
 // function for choose a specific year to view the data
 function Select(){
     var temp = $('#text').val();
