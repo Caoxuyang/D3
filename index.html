@@ -15,6 +15,7 @@
     <input name="Select Year" type="button" value="Select Year" onclick="Select()" />
     <input name="text" type="text"  id="text"/>
     <input name="AnimationButton" type="button" value="Show Me The Change From 1900 to 2016" onclick="Animation()" />
+    <input name="Stop" type="button" value="Stop!" onclick="Animation()" />
     
    
 </div>
@@ -24,42 +25,36 @@
 
 var Data = "Gapminder_All_Time.csv";
 
-
+//margin for main svg
 var margin = {top: 50, right: 20, bottom: 50, left: 50},
     width = 1000 - margin.left - margin.right,
     height = 600 - margin.top - margin.bottom;
 
+// the tab for showing the information of the selected circle
 var informationTab = d3.select("body").append("div")
     .attr("class", "informationTab")
     .style("opacity", 0);
 
 
-
+// the main svg
 var svg = d3.select("body").append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-  var svgForBar1 = d3.select("body").append("svg")
+// svg for bar charts 
+var svgForBar1 = d3.select("body").append("svg")
     .attr("width", 400)
-    .attr("height", 300)
-    .attr("style","outline: 5px solid #630")
-    ;
-
-  var svgForBar2 = d3.select("body").append("svg")
-    .attr("width", 400)
-    .attr("height", 300)
-    .attr("style", "outline: 5px solid #630")
-
-    .attr("y", 310);
+    .attr("height", 600)
+    .attr("style","outline: 5px solid #630");
 
 var year = 1900;
-var color = d3.scale.category10();
 
+var color = d3.scale.category10();
+// scale for gdp and xaxis
 var xScale = d3.scale.linear().domain([60000, 0]).range([width, 0]),
 xAxis = d3.svg.axis().scale(xScale).orient("bottom").tickFormat(d3.format("d"));
-
+// scale for life and yaxis
 var yScale = d3.scale.linear().domain([15, 90]).range([height, 0]), // value -> display
 yAxis = d3.svg.axis().scale(yScale).orient("left");
 
@@ -87,20 +82,24 @@ svg.append("g")
       .style("text-anchor", "end")
       .text("Life expectancy");
 
+// function for travel from 1900 - 2016
 function Animation(){
   
   for(var i=0;i<72;i++){
     ChangeYear(1);
     setInterval(1000);
   }
+  
 }
+
+// function for choose a specific year to view the data
 function Select(){
     var temp = $('#text').val();
     if(temp>1950) year = temp-1;
     else year = temp - 10;
     ChangeYear(1);
 }
-
+// funcion to change the main graph
 function ChangeYear(x){
   //console.log(year);
 d3.csv(Data, function(error, data){
@@ -108,7 +107,7 @@ d3.csv(Data, function(error, data){
       
       svg.select("#circles").remove();
       svg.select("#title").remove();
-
+      //deal with 1900->1910->1920..
       if(year<1950)
         year = year + 10 * x;
       else
@@ -124,6 +123,7 @@ d3.csv(Data, function(error, data){
 
 
       //console.log(y);
+      //prepare the data for each country every year.
       var yearGDP = [];
       var yearHealth = [];
       var yearPopulation = [];
@@ -185,7 +185,7 @@ d3.csv(Data, function(error, data){
           }
         };
      
-
+      // It's like when year is 2016 allData for China is [China, China's GDP, Life, population, asia]
       var allData = d3.zip(Countries, yearGDP, yearHealth, yearPopulation, region);
 
       var circle = svg.append("g").attr("id", "circles")
@@ -199,7 +199,7 @@ d3.csv(Data, function(error, data){
         .style("fill", function(d) { return color(d[4]);})
         .style("stroke", "black")
         
-
+        // show information tab
         .on("mouseover", function(d) {
           informationTab.transition()
                .duration(200)
