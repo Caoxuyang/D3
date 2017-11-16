@@ -6,6 +6,19 @@
   <meta charset="utf-8">
   <script src="https://d3js.org/d3.v3.min.js"></script>
   <script type="text/javascript" src="jquery.js"></script>
+  <style type="text/css">
+    .axis path,
+    .axis line {
+      fill: none;
+      stroke: black;
+      shape-rendering: crispEdges;
+    }
+  
+    .axis text {
+      font-family: sans-serif;
+      font-size: 11px;
+    }
+  </style>
 	<Title> Assignment2 </Title>
 </head>
 <body>
@@ -29,6 +42,13 @@ var margin = {top: 50, right: 20, bottom: 50, left: 50},
     width = 1000 - margin.left - margin.right,
     height = 600 - margin.top - margin.bottom;
 
+/*
+//Width and height
+var outer_width = 400;
+var outer_height = 600;
+var svg_width = outer_width - margin.left - margin.right;
+var svg_height = outer_height - margin.top - margin.bottom;
+*/
 // the tab for showing the information of the selected circle
 var informationTab = d3.select("body").append("div")
     .attr("class", "informationTab")
@@ -41,12 +61,16 @@ var svg = d3.select("body").append("svg")
     .attr("height", height + margin.top + margin.bottom)
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+/*
 // svg for bar charts 
-var svgForBar1 = d3.select("body").append("svg")
-    .attr("width", 400)
-    .attr("height", 600)
-    .attr("style","outline: 5px solid #630");
-
+  var svg1 = d3.select("body")
+    .append("svg")
+    .attr("width", svg_width + margin.left + margin.right)
+    .attr("height", svg_height + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+    .attr("class", "chart");
+*/
 
 var year = 1900;
 // to control the animation
@@ -59,6 +83,8 @@ xAxis = d3.svg.axis().scale(xScale).orient("bottom").tickFormat(d3.format("d"));
 // scale for life and yaxis
 var yScale = d3.scale.linear().domain([15, 90]).range([height, 0]), // value -> display
 yAxis = d3.svg.axis().scale(yScale).orient("left");
+
+
 
 //x axis
  svg.append("g")
@@ -103,6 +129,7 @@ function Animation(){
 function stopRunning(){
   keepRunning = false;
 }
+
 // function for choose a specific year to view the data
 function Select(){
     var temp = $('#text').val();
@@ -110,10 +137,11 @@ function Select(){
     else year = temp - 10;
     ChangeYear(1);
 }
+
 // funcion to change the main graph
 function ChangeYear(x){
   //console.log(year);
-d3.csv(Data, function(error, data){
+  d3.csv(Data, function(error, data){
  
       
       svg.select("#circles").remove();
@@ -133,20 +161,31 @@ d3.csv(Data, function(error, data){
 
 
 
-      //console.log(y);
       //prepare the data for each country every year.
       var yearGDP = [];
       var yearHealth = [];
       var yearPopulation = [];
       var region = [];
       var Countries = new Array();
+      /*
+      // 0-7 for Asia   Europe   Africa   North America   Central America   South America   Oceania   Australia
+      var Regions = new Array(0, 0, 0, 0, 0, 0, 0, 0);
+      var RegionNames = new Array("Asia", "Europe", "Africa", "North America", "Central America", "South America", "Oceania", "Australia");
+      // 0-8 for islamic republic    republic    monarchy   external territory    federal republic   
+      // absolute monarchy   people's republic    socialist republic   parliamentary federal republic
+      var Goverment = new Array(0, 0, 0, 0, 0, 0, 0, 0, 0);
+      var GovermentNames = new Array("islamic republic", "republic", "monarchy", "external territory"
+      , "federal republic", "absolute monarchy", "people's republic", "socialist republic", "parliamentary federal republic");
+      */
       
-        data.forEach(function (d) {
-          if (d.Year == y) {
-          if(Countries.indexOf(d.Country) == -1)
-            Countries.push(d.Country);
-          }
-        });
+     
+      
+      data.forEach(function (d) {
+        if (d.Year == y) {
+        if(Countries.indexOf(d.Country) == -1)
+          Countries.push(d.Country);
+        }
+      });
       
 
       data.forEach(function(d){
@@ -180,25 +219,97 @@ d3.csv(Data, function(error, data){
       });
 
       
-        for (var c in Countries) {
-          //console.log(Countries[c]);
-          var notFound = true;
-          data.forEach(function (d) {
-            if (notFound) {
-              if (d.Country == Countries[c]) {
-                region.push(d.Region);
-                notFound = false;
-              }
-            }
-          });
+      for (var c in Countries) {
+        //console.log(Countries[c]);
+        var notFound = true;
+        data.forEach(function (d) {
           if (notFound) {
-            region.push("Unknown");
+            if (d.Country == Countries[c]) {
+              region.push(d.Region);
+              notFound = false;
+            }
           }
-        };
-     
+        });
+        if (notFound) {
+          region.push("Unknown");
+        }
+      };
+      /*
+      // prepare the array for region and goverment for part two
+      for (var c in Countries) {
+        //console.log(Countries[c]);
+        data.forEach(function (d) {
+            if (d.Country == Countries[c] && d.Year == y) {
+              switch (d.Region) {
+                case "Asia":
+                  Regions[0]++;
+                  break;
+                case "Europe":
+                  Regions[1]++;
+                  break;
+                case "Africa":
+                  Regions[2]++;
+                  break;
+                case "North America":
+                  Regions[3]++;
+                  break;
+                case "Central America":
+                  Regions[4]++;
+                  break;
+                case "South America":
+                  Regions[5]++;
+                  break;
+                case "Oceania":
+                  Regions[6]++;
+                  break;
+                case "Australia":
+                  Regions[7]++;
+                  break;
+              }
+              switch (d.Goverment) {
+                case "islamic republic":
+                  Goverment[0]++;
+                  break;
+                case "republic":
+                  Goverment[1]++;
+                  break;
+                case "monarchy":
+                  Goverment[2]++;
+                  break;
+                case "external territory":
+                  Goverment[3]++;
+                  break;
+                case "federal republic":
+                  Goverment[4]++;
+                  break;
+                case "absolute monarchy":
+                  Goverment[5]++;
+                  break;
+                case "people's republic":
+                  Goverment[6]++;
+                  break;
+                case "socialist republic":
+                  Goverment[7]++;
+                  break;
+                case "parliamentary federal republic":
+                  Goverment[8]++;
+                  break;
+               
+              }
+              console.log(Regions[1]);
+            }
+            
+          
+        });
+        
+     };
+     */
       // It's like when year is 2016 allData for China is [China, China's GDP, Life, population, asia]
       var allData = d3.zip(Countries, yearGDP, yearHealth, yearPopulation, region);
+      //var dataForBar1 = d3.zip(RegionNames,Regions);
+      //var dataForBar2 = d3.zip(GovermentNames,Goverment);
 
+      //BarChart(dataForBar1,dataForBar2);
       var circle = svg.append("g").attr("id", "circles")
         .selectAll("circle")
         .data(allData)
@@ -236,6 +347,61 @@ d3.csv(Data, function(error, data){
     
 };
 
+
+/*
+function BarChart(data1,data2){
+    
+  // Create a scale to scale populations share values nicely for bar heights
+  var xScale = d3.scale.linear()
+    .domain([0, d3.max(data1, function (d) { return +d.Regions; })])
+    .range([0, svg_width]);
+
+  // Create a scale object to nicely take care of positioning bars along the horizontal axis
+  var yScale = d3.scale.linear()
+    .domain(data1.map(function (d) { return d.RegionNames; }))
+    .range([0, svg_height], 0.1)
+    ;
+
+  // Create an x-axis connected to the x scale
+  var xAxis = d3.axisBottom()
+    .scale(xScale)
+    .ticks(4);
+
+  //Define Y axis
+  var yAxis = d3.axisLeft()
+    .scale(yScale);
+
+  // Call the x-axis
+  svg.append("g")
+    .attr("class", "axis")
+    .attr("transform", "translate(0," + svg_height + ")")
+    .call(xAxis);
+
+  // Call the y axis
+  svg.append("g")
+    .attr("class", "axis")
+    .call(yAxis);
+
+
+  // Add rectangles
+  svg.selectAll("rect")
+    .data(data1)
+    .enter()
+    .append("rect")
+    .attr("y", function (d, i) {
+      return yScale(d[0][i]);
+    })
+    .attr("x", 0)
+    .attr("width", function (d, i) {
+      return xScale(d[1][i]);
+    })
+    .attr("height", function (d) {
+      return yScale.bandwidth();
+    })
+    .style("fill", "Blue");
+}
+*/
+//to start
 ChangeYear(0);
 
 
