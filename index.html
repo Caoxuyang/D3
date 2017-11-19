@@ -6,6 +6,7 @@
   <meta charset="utf-8">
   <script src="https://d3js.org/d3.v3.min.js"></script>
   <script type="text/javascript" src="jquery.js"></script>
+<<<<<<< HEAD
   <style type="text/css">
     .axis path,
     .axis line {
@@ -19,6 +20,8 @@
       font-size: 11px;
     }
   </style>
+=======
+>>>>>>> 3590ff2b3e7bec8b8814381575b22add30ffc393
 	<Title> Assignment2 </Title>
 </head>
 <body>
@@ -28,8 +31,13 @@
     <input name="Select Year" type="button" value="Select Year" onclick="Select()" />
     <input name="text" type="text"  id="text"/>
     <input name="AnimationButton" type="button" value="Show Me The Change From 1900 to 2016" onclick="Animation()" />
+<<<<<<< HEAD
     <input name="Stop" type="button" value="Stop!" onclick="stopRunning()" />
     
+=======
+    
+   
+>>>>>>> 3590ff2b3e7bec8b8814381575b22add30ffc393
 </div>
 
 
@@ -37,11 +45,16 @@
 
 var Data = "Gapminder_All_Time.csv";
 
+<<<<<<< HEAD
 //margin for main svg
+=======
+
+>>>>>>> 3590ff2b3e7bec8b8814381575b22add30ffc393
 var margin = {top: 50, right: 20, bottom: 50, left: 50},
     width = 1000 - margin.left - margin.right,
     height = 600 - margin.top - margin.bottom;
 
+<<<<<<< HEAD
 /*
 //Width and height
 var outer_width = 400;
@@ -50,17 +63,24 @@ var svg_width = outer_width - margin.left - margin.right;
 var svg_height = outer_height - margin.top - margin.bottom;
 */
 // the tab for showing the information of the selected circle
+=======
+>>>>>>> 3590ff2b3e7bec8b8814381575b22add30ffc393
 var informationTab = d3.select("body").append("div")
     .attr("class", "informationTab")
     .style("opacity", 0);
 
 
+<<<<<<< HEAD
 // the main svg
+=======
+
+>>>>>>> 3590ff2b3e7bec8b8814381575b22add30ffc393
 var svg = d3.select("body").append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+<<<<<<< HEAD
 /*
 // svg for bar charts 
   var svg1 = d3.select("body")
@@ -86,6 +106,31 @@ yAxis = d3.svg.axis().scale(yScale).orient("left");
 
 
 
+=======
+
+  var svgForBar1 = d3.select("body").append("svg")
+    .attr("width", 400)
+    .attr("height", 300)
+    .attr("style","outline: 5px solid #630")
+    ;
+
+  var svgForBar2 = d3.select("body").append("svg")
+    .attr("width", 400)
+    .attr("height", 300)
+    .attr("style", "outline: 5px solid #630")
+
+    .attr("y", 310);
+
+var year = 1900;
+var color = d3.scale.category10();
+
+var xScale = d3.scale.linear().domain([60000, 0]).range([width, 0]),
+xAxis = d3.svg.axis().scale(xScale).orient("bottom").tickFormat(d3.format("d"));
+
+var yScale = d3.scale.linear().domain([15, 90]).range([height, 0]), // value -> display
+yAxis = d3.svg.axis().scale(yScale).orient("left");
+
+>>>>>>> 3590ff2b3e7bec8b8814381575b22add30ffc393
 //x axis
  svg.append("g")
       .attr("class", "x axis")
@@ -110,6 +155,7 @@ svg.append("g")
       .style("text-anchor", "end")
       .text("Life expectancy");
 
+<<<<<<< HEAD
 // function for travel from 1900 - 2016
 function Animation(){
   keepRunning = true;
@@ -131,6 +177,15 @@ function stopRunning(){
 }
 
 // function for choose a specific year to view the data
+=======
+function Animation(){
+  
+  for(var i=0;i<72;i++){
+    ChangeYear(1);
+    setInterval(1000);
+  }
+}
+>>>>>>> 3590ff2b3e7bec8b8814381575b22add30ffc393
 function Select(){
     var temp = $('#text').val();
     if(temp>1950) year = temp-1;
@@ -138,15 +193,25 @@ function Select(){
     ChangeYear(1);
 }
 
+<<<<<<< HEAD
 // funcion to change the main graph
 function ChangeYear(x){
   //console.log(year);
   d3.csv(Data, function(error, data){
+=======
+function ChangeYear(x){
+  //console.log(year);
+d3.csv(Data, function(error, data){
+>>>>>>> 3590ff2b3e7bec8b8814381575b22add30ffc393
  
       
       svg.select("#circles").remove();
       svg.select("#title").remove();
+<<<<<<< HEAD
       //deal with 1900->1910->1920..
+=======
+
+>>>>>>> 3590ff2b3e7bec8b8814381575b22add30ffc393
       if(year<1950)
         year = year + 10 * x;
       else
@@ -161,12 +226,17 @@ function ChangeYear(x){
 
 
 
+<<<<<<< HEAD
       //prepare the data for each country every year.
+=======
+      //console.log(y);
+>>>>>>> 3590ff2b3e7bec8b8814381575b22add30ffc393
       var yearGDP = [];
       var yearHealth = [];
       var yearPopulation = [];
       var region = [];
       var Countries = new Array();
+<<<<<<< HEAD
       /*
       // 0-7 for Asia   Europe   Africa   North America   Central America   South America   Oceania   Australia
       var Regions = new Array(0, 0, 0, 0, 0, 0, 0, 0);
@@ -186,6 +256,15 @@ function ChangeYear(x){
           Countries.push(d.Country);
         }
       });
+=======
+      
+        data.forEach(function (d) {
+          if (d.Year == y) {
+          if(Countries.indexOf(d.Country) == -1)
+            Countries.push(d.Country);
+          }
+        });
+>>>>>>> 3590ff2b3e7bec8b8814381575b22add30ffc393
       
 
       data.forEach(function(d){
@@ -219,6 +298,7 @@ function ChangeYear(x){
       });
 
       
+<<<<<<< HEAD
       for (var c in Countries) {
         //console.log(Countries[c]);
         var notFound = true;
@@ -310,6 +390,27 @@ function ChangeYear(x){
       //var dataForBar2 = d3.zip(GovermentNames,Goverment);
 
       //BarChart(dataForBar1,dataForBar2);
+=======
+        for (var c in Countries) {
+          //console.log(Countries[c]);
+          var notFound = true;
+          data.forEach(function (d) {
+            if (notFound) {
+              if (d.Country == Countries[c]) {
+                region.push(d.Region);
+                notFound = false;
+              }
+            }
+          });
+          if (notFound) {
+            region.push("Unknown");
+          }
+        };
+     
+
+      var allData = d3.zip(Countries, yearGDP, yearHealth, yearPopulation, region);
+
+>>>>>>> 3590ff2b3e7bec8b8814381575b22add30ffc393
       var circle = svg.append("g").attr("id", "circles")
         .selectAll("circle")
         .data(allData)
@@ -321,7 +422,11 @@ function ChangeYear(x){
         .style("fill", function(d) { return color(d[4]);})
         .style("stroke", "black")
         
+<<<<<<< HEAD
         // show information tab
+=======
+
+>>>>>>> 3590ff2b3e7bec8b8814381575b22add30ffc393
         .on("mouseover", function(d) {
           informationTab.transition()
                .duration(200)
@@ -347,6 +452,7 @@ function ChangeYear(x){
     
 };
 
+<<<<<<< HEAD
 
 /*
 function BarChart(data1,data2){
@@ -402,6 +508,8 @@ function BarChart(data1,data2){
 }
 */
 //to start
+=======
+>>>>>>> 3590ff2b3e7bec8b8814381575b22add30ffc393
 ChangeYear(0);
 
 
