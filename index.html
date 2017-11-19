@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html>
-
 <head>
 
   <meta charset="utf-8">
   <script src="https://d3js.org/d3.v3.min.js"></script>
+  <script type="text/javascript" src="./d3/d3.v4.js" charset="utf-8"></script>
   <script type="text/javascript" src="jquery.js"></script>
   <style type="text/css">
     .axis path,
@@ -28,14 +28,12 @@
     <input name="Select Year" type="button" value="Select Year" onclick="Select()" />
     <input name="text" type="text"  id="text"/>
     <input name="AnimationButton" type="button" value="Show Me The Change From 1900 to 2016" onclick="Animation()" />
-    <input name="Stop" type="button" value="Stop!" onclick="stopRunning()" />
+    <input name="Stop" type="button" value="Stop!" onclick="stopRunning()" /> 
     
-    
-   
 </div>
 
 
-<script type = "text/javascript">
+<script type = "text/javascript" >
 
 var Data = "Gapminder_All_Time.csv";
 
@@ -44,17 +42,17 @@ var margin = {top: 50, right: 20, bottom: 50, left: 50},
     width = 1000 - margin.left - margin.right,
     height = 600 - margin.top - margin.bottom;
 
-/*
+
 //Width and height
-var outer_width = 400;
-var outer_height = 600;
-var svg_width = outer_width - margin.left - margin.right;
-var svg_height = outer_height - margin.top - margin.bottom;
-*/
+var outer_width = 500;
+var outer_height = 400;
+var svg_width = outer_width - 30;
+var svg_height = outer_height - 30;
+
 // the tab for showing the information of the selected circle
 var informationTab = d3.select("body").append("div")
     .attr("class", "informationTab")
-    .style("opacity", 0);
+    .style("opacity", 1);
 
 
 // the main svg
@@ -63,7 +61,7 @@ var svg = d3.select("body").append("svg")
     .attr("height", height + margin.top + margin.bottom)
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-/*
+
 // svg for bar charts 
   var svg1 = d3.select("body")
     .append("svg")
@@ -72,13 +70,18 @@ var svg = d3.select("body").append("svg")
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
     .attr("class", "chart");
-*/
+
 
 var year = 1900;
 // to control the animation
 var keepRunning = true;
 
 var color = d3.scale.category10();
+/********************
+
+Scale and axis for main graph part
+
+**********/
 // scale for gdp and xaxis
 var xScale = d3.scale.linear().domain([60000, 0]).range([width, 0]),
 xAxis = d3.svg.axis().scale(xScale).orient("bottom").tickFormat(d3.format("d"));
@@ -86,31 +89,82 @@ xAxis = d3.svg.axis().scale(xScale).orient("bottom").tickFormat(d3.format("d"));
 var yScale = d3.scale.linear().domain([15, 90]).range([height, 0]), // value -> display
 yAxis = d3.svg.axis().scale(yScale).orient("left");
 
+  //main x axis
+  svg.append("g")
+    .attr("class", "x axis")
+    .attr("transform", "translate(0," + height + ")")
+    .call(xAxis)
+    .append("text")
+    .attr("class", "label")
+    .attr("x", width)
+    .attr("y", -6)
+    .style("text-anchor", "end")
+    .text("GDP");
+
+  //main y axis
+  svg.append("g")
+    .attr("class", "y axis")
+    .call(yAxis)
+    .append("text")
+    .attr("class", "label")
+    .attr("transform", "rotate(-90)")
+    .attr("y", 6)
+    .attr("dy", ".71em")
+    .style("text-anchor", "end")
+    .text("Life expectancy");
+
+  svg.append("text")
+    .attr("id", "newyear")
+    .attr("text-anchor", "end")
+    .attr("x", 650)
+    .attr("y", 325)
+    .style("opacity", 0.4)
+    .attr("font-size", "250px")
+    .text(+year);
 
 
-//x axis
- svg.append("g")
-      .attr("class", "x axis")
-      .attr("transform", "translate(0," + height + ")")
-      .call(xAxis)
+/********************
+
+Scale and axis for main graph part
+
+
+**********/
+//xscale for bar chart
+ 	// Create a scale to scale market share values nicely for bar heights
+    var baryScale = d3.scale.linear()
+      .domain([60,0])
+      .range([svg_height-100,0]);
+
+    // Create a scale object to nicely take care of positioning bars along the horizontal axis
+    // We don't set the domain yet as data isn't loaded
+    var barxScale = d3.scale.ordinal()
+      .range([0, 400], 0.1);
+
+    //Define Y axis
+    var baryAxis = d3.svg.axis().scale(baryScale).ticks(5).orient("left");
+
+
+
+    // Create an x-axis connected to the x scale
+    var barxAxis = d3.svg.axis().scale(barxScale).orient("bottom");
+
+    // Call the y axis
+    svg1.append("g")
+      .attr("class", "axis")
+      .attr("id", "y-axis")
+      .call(baryAxis)
       .append("text")
-      .attr("class", "label")
-      .attr("x", width)
-      .attr("y", -6)
       .style("text-anchor", "end")
-      .text("GDP");
+      .text("Countries");
 
-//y axis
-svg.append("g")
-      .attr("class", "y axis")
-      .call(yAxis)
-      .append("text")
-      .attr("class", "label")
-      .attr("transform", "rotate(-90)")
-      .attr("y", 6)
-      .attr("dy", ".71em")
-      .style("text-anchor", "end")
-      .text("Life expectancy");
+    // All but call the x-axis
+    svg1.append("g")
+      .attr("class", "axis")
+      .attr("id", "x-axis")
+      .call(barxAxis);
+
+
+
 
 // function for travel from 1900 - 2016
 function Animation(){
@@ -169,7 +223,7 @@ function ChangeYear(x){
       var yearPopulation = [];
       var region = [];
       var Countries = new Array();
-      /*
+      
       // 0-7 for Asia   Europe   Africa   North America   Central America   South America   Oceania   Australia
       var Regions = new Array(0, 0, 0, 0, 0, 0, 0, 0);
       var RegionNames = new Array("Asia", "Europe", "Africa", "North America", "Central America", "South America", "Oceania", "Australia");
@@ -178,7 +232,7 @@ function ChangeYear(x){
       var Goverment = new Array(0, 0, 0, 0, 0, 0, 0, 0, 0);
       var GovermentNames = new Array("islamic republic", "republic", "monarchy", "external territory"
       , "federal republic", "absolute monarchy", "people's republic", "socialist republic", "parliamentary federal republic");
-      */
+      
       
      
       
@@ -236,7 +290,7 @@ function ChangeYear(x){
           region.push("Unknown");
         }
       };
-      /*
+      
       // prepare the array for region and goverment for part two
       for (var c in Countries) {
         //console.log(Countries[c]);
@@ -298,56 +352,89 @@ function ChangeYear(x){
                   break;
                
               }
-              console.log(Regions[1]);
             }
             
           
         });
         
      };
-     */
+    //console.log(Regions[1]);
+
+     
       // It's like when year is 2016 allData for China is [China, China's GDP, Life, population, asia]
       var allData = d3.zip(Countries, yearGDP, yearHealth, yearPopulation, region);
-      //var dataForBar1 = d3.zip(RegionNames,Regions);
+      var dataForBar1 = d3.zip(RegionNames,Regions);
       //var dataForBar2 = d3.zip(GovermentNames,Goverment);
-
+      console.log(allData);
+      generateVis(dataForBar1);
       //BarChart(dataForBar1,dataForBar2);
       var circle = svg.append("g").attr("id", "circles")
         .selectAll("circle")
         .data(allData)
         .enter().append("circle")
+        .style("fill", function (d) { return color(d[4]); })
+        .on("mouseover", function (d) {
+          informationTab.transition()
+            .duration(200)
+            .style("opacity", .9);
+          informationTab.html(d[0] + "<br/> " + "GDP: " + d[1] + "<br/>" + " Life Expectancy: " + d[2] + "<br/>" + " Population: " + d[3] + "<br/>" + "Continent: " + d[4])
+        })
+        .on("mouseout", function (d) {
+          informationTab.transition()
+            .duration(500)
+            .style("opacity", 0)
+        })
+        .transition()
+        .duration(500)
         .attr("cx", function(d) {return xScale(d[1]);})
         .attr("cy", function(d) {return yScale(d[2]);})
         .attr("class", "y1")
         .attr("r", function(d){return Math.pow(d[3], 1/2)/600;})
-        .style("fill", function(d) { return color(d[4]);})
-        .style("stroke", "black")
-        
-        .on("mouseover", function(d) {
-          informationTab.transition()
-               .duration(200)
-               .style("opacity", .9);
-          informationTab.html(d[0] + "<br/> " + "GDP: " + d[1] + "<br/>" + " Life Expectancy: " + d[2] + "<br/>" + " Population: " + d[3] + "<br/>" + "Continent: " + d[4])
-        })
-        .on("mouseout", function(d) {
-          informationTab.transition()
-               .duration(500)
-               .style("opacity", 0)
-        });
+        .style("stroke", "white")
+        .style("stroke-size","3px")
+        .style("opacity", 0.8);
 
         
         //set the year and the position
-        var title = svg.append("g").attr("id", "title")
-          .append("text")
-          .attr("x", width-300)           
-          .attr("y", height-150)
-          .style("font-size", "65px") 
-          .text("Year: " + y);
+       d3.select("#newyear").text(y)
         
       });
     
 };
 
+function generateVis(data) {
+
+  //console.log(data);
+
+  // Filter the data to only include the current year
+
+  /******** PERFORM DATA JOIN ************/
+  // Join new data with old elements, if any.
+  var bars = svg1.selectAll("rect")
+    .data(data);
+
+
+
+  /******** HANDLE ENTER SELECTION ************/
+  // Create new elements in the dataset
+  bars.enter()
+    .append("rect")
+    .attr("x", function (d,i) {
+      return 52*i;
+    })
+    .attr("y",0)
+    .attr("width", 37)
+    .attr("height", function (d) {
+      return baryScale(d[1]);
+    })
+    .style("fill", "Blue")
+    .append("text")
+    .text(function(d){
+      return d;
+    });
+
+  // Set the year label
+}
 ChangeYear(0);
 
 
