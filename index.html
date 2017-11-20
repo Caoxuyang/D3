@@ -71,6 +71,15 @@ var svg = d3.select("body").append("svg")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
     .attr("class", "chart");
 
+  //svg for another bar charts
+  var svg2 = d3.select("body")
+      .append("svg")
+      .attr("width", svg_width + margin.left + margin.right)
+      .attr("height", svg_height + margin.top + margin.bottom)
+      .append("g")
+      .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+      .attr("class", "chart");
+
 
 var year = 1900;
 // to control the animation
@@ -134,19 +143,27 @@ Scale and axis for main graph part
     var baryScale = d3.scale.linear()
       .domain([60,0])
       .range([svg_height-100,0]);
+    
+    var baryScale1 = d3.scale.linear().domain([125,0]).range([svg_height-100,0]);
+
 
     // Create a scale object to nicely take care of positioning bars along the horizontal axis
     // We don't set the domain yet as data isn't loaded
+    var GovermentNames = new Array("islamic republic", "republic", "monarchy", "external territory"
+        , "federal republic", "absolute monarchy", "people's republic", "socialist republic", "parliamentary federal republic");
     var barxScale = d3.scale.ordinal()
       .range([0, 400], 0.1);
+    var barxScale1 = d3.scale.ordinal().range([GovermentNames],1);
 
     //Define Y axis
     var baryAxis = d3.svg.axis().scale(baryScale).ticks(5).orient("left");
+    var baryAxis1 = d3.svg.axis().scale(baryScale1).ticks(12).orient("left");
 
 
 
     // Create an x-axis connected to the x scale
     var barxAxis = d3.svg.axis().scale(barxScale).orient("bottom");
+    var barxAxis = d3.svg.axis().scale(barxScale1).orient("bottom");
 
     // Call the y axis
     svg1.append("g")
@@ -154,8 +171,9 @@ Scale and axis for main graph part
       .attr("id", "y-axis")
       .call(baryAxis)
       .append("text")
-      .style("text-anchor", "end")
-      .text("Countries");
+      .attr("transform", "rotate(-60)")
+      .style("text-anchor", "front")
+      .text("Regions");
 
     // All but call the x-axis
     svg1.append("g")
@@ -164,6 +182,21 @@ Scale and axis for main graph part
       .call(barxAxis);
 
 
+  // Call the y axis
+  svg2.append("g")
+    .attr("class", "axis")
+    .attr("id", "y-axis")
+    .call(baryAxis1)
+    .append("text")
+    .attr("transform", "rotate(-60)")
+      .style("text-anchor", "front")
+    .text("Governments");
+
+  // All but call the x-axis
+  svg2.append("g")
+    .attr("class", "axis")
+    .attr("id", "x-axis")
+    .call(barxAxis);
 
 
 // function for travel from 1900 - 2016
@@ -322,7 +355,7 @@ function ChangeYear(x){
                   Regions[7]++;
                   break;
               }
-              switch (d.Goverment) {
+              switch (d.Government) {
                 case "islamic republic":
                   Goverment[0]++;
                   break;
@@ -364,9 +397,10 @@ function ChangeYear(x){
       // It's like when year is 2016 allData for China is [China, China's GDP, Life, population, asia]
       var allData = d3.zip(Countries, yearGDP, yearHealth, yearPopulation, region);
       var dataForBar1 = d3.zip(RegionNames,Regions);
-      //var dataForBar2 = d3.zip(GovermentNames,Goverment);
+      var dataForBar2 = d3.zip(GovermentNames,Goverment);
       console.log(allData);
       generateVis(dataForBar1);
+      generateVis1(dataForBar2);
       //BarChart(dataForBar1,dataForBar2);
       var circle = svg.append("g").attr("id", "circles")
         .selectAll("circle")
@@ -402,6 +436,7 @@ function ChangeYear(x){
     
 };
 
+//Bar chart No.1
 function generateVis(data) {
 
   //console.log(data);
@@ -435,6 +470,49 @@ function generateVis(data) {
 
   // Set the year label
 }
+//bar chart No.2
+  function generateVis1(data) {
+
+    //console.log(data);
+
+    // Filter the data to only include the current year
+
+    /******** PERFORM DATA JOIN ************/
+    // Join new data with old elements, if any.
+    var bars = svg2.selectAll("rect")
+      .data(data);
+
+
+
+    /******** HANDLE ENTER SELECTION ************/
+    // Create new elements in the dataset
+    bars.enter()
+      .append("rect")
+      .attr("x", function (d, i) {
+        return 45 * i;
+      })
+      .attr("y", 0)
+      .attr("width", 39)
+      .attr("height", function (d) {
+        return baryScale1(d[1]);
+      })
+      .style("fill", "Blue");
+/*
+      d3.svg2.selectAll("text")
+          .data(data)
+          .enter()
+          .append("text")
+          .attr("fill", "black")
+          .attr("x", function (d, i) {
+            return 45 * i;
+          })
+          .attr("y", 0)
+          .html(function (d) {
+            return d[0];
+          });
+*/
+
+  }
 ChangeYear(0);
 
 
