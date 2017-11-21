@@ -4,7 +4,6 @@
 
   <meta charset="utf-8">
   <script src="https://d3js.org/d3.v3.min.js"></script>
-  <script type="text/javascript" src="./d3/d3.v4.js" charset="utf-8"></script>
   <script type="text/javascript" src="jquery.js"></script>
   <style type="text/css">
     .axis path,
@@ -153,7 +152,8 @@ Scale and axis for main graph part
         , "federal republic", "absolute monarchy", "people's republic", "socialist republic", "parliamentary federal republic");
     var barxScale = d3.scale.ordinal()
       .range([0, 400], 0.1);
-    var barxScale1 = d3.scale.ordinal().range([GovermentNames],1);
+    var barxScale1 = d3.scale.ordinal()
+        .range([0, 400], 0.1);
 
     //Define Y axis
     var baryAxis = d3.svg.axis().scale(baryScale).ticks(5).orient("left");
@@ -163,7 +163,7 @@ Scale and axis for main graph part
 
     // Create an x-axis connected to the x scale
     var barxAxis = d3.svg.axis().scale(barxScale).orient("bottom");
-    var barxAxis = d3.svg.axis().scale(barxScale1).orient("bottom");
+    var barxAxis1 = d3.svg.axis().scale(barxScale1).orient("bottom");
 
     // Call the y axis
     svg1.append("g")
@@ -196,7 +196,7 @@ Scale and axis for main graph part
   svg2.append("g")
     .attr("class", "axis")
     .attr("id", "x-axis")
-    .call(barxAxis);
+    .call(barxAxis1);
 
 
 // function for travel from 1900 - 2016
@@ -440,18 +440,31 @@ function ChangeYear(x){
 function generateVis(data) {
 
   //console.log(data);
-
+  svg1.select("#rect").remove();
+  svg1.select("#title").remove();
   // Filter the data to only include the current year
 
   /******** PERFORM DATA JOIN ************/
   // Join new data with old elements, if any.
   var bars = svg1.selectAll("rect")
     .data(data);
+  
+  var texts = svg1.selectAll("text").data(data);
 
 
 
   /******** HANDLE ENTER SELECTION ************/
   // Create new elements in the dataset
+  texts.enter()
+    .append("text")
+    .attr("x", function (d, i) {
+      return 52 * i;
+    })
+    .attr("y", 0)
+    .attr("fill", "black")
+    .html(function (d) {
+      return d[0];
+    });
   bars.enter()
     .append("rect")
     .attr("x", function (d,i) {
@@ -462,19 +475,16 @@ function generateVis(data) {
     .attr("height", function (d) {
       return baryScale(d[1]);
     })
-    .style("fill", "Blue")
-    .append("text")
-    .text(function(d){
-      return d;
-    });
+    .style("fill", "Blue");
 
-  // Set the year label
+     
 }
 //bar chart No.2
   function generateVis1(data) {
 
     //console.log(data);
-
+    svg2.select("#rect").remove();
+    svg2.select("#title").remove();
     // Filter the data to only include the current year
 
     /******** PERFORM DATA JOIN ************/
@@ -497,8 +507,8 @@ function generateVis(data) {
         return baryScale1(d[1]);
       })
       .style("fill", "Blue");
-/*
-      d3.svg2.selectAll("text")
+
+      svg2.selectAll("text")
           .data(data)
           .enter()
           .append("text")
@@ -510,7 +520,7 @@ function generateVis(data) {
           .html(function (d) {
             return d[0];
           });
-*/
+
 
   }
 ChangeYear(0);
