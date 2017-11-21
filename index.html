@@ -18,6 +18,24 @@
       font-family: sans-serif;
       font-size: 11px;
     }
+    .Area{
+    width: 180px;
+    height: 34px;
+    overflow: hidden;
+    background: url(new_arrow.png) no-repeat right #ddd;
+    border-radius: 14px;
+    border: 1px solid #ccc;
+    }
+    
+    /*dropdown menu for Government wise filtering*/
+    .Government{
+    width: 180px;
+    height: 34px;
+    overflow: hidden;
+    border-radius: 14px;
+    background: url(new_arrow.png) no-repeat right #ddd;
+    border: 1px solid #ccc;
+    }
   </style>
 	<Title> Assignment2 </Title>
 </head>
@@ -30,6 +48,29 @@
     <input name="AnimationButton" type="button" value="Show Me The Change From 1900 to 2016" onclick="Animation()" />
     <input name="Stop" type="button" value="Stop!" onclick="stopRunning()" /> 
     
+</div>
+<div>
+  <select id="country" class="Area" onchange="dropdownChange(this.value)">
+    <option value="None">--Region--</option>
+    <option value="Africa">Africa</option>
+    <option value="America">Americas</option>
+    <option value="Asia">Asia</option>
+    <option value="Australia">Australia</option>
+    <option value="Europe">Europe</option>
+  </select>
+    <select id="Govt" class="Government" onchange="dropdownChange1(this.value)">
+    <option value="None">-- Government--</option>
+    <option value="islamic republic">Islamic Republic</option>
+    <option value="Republic">Republic</option>
+    <option value="monarchy">Constitutional Monarchy</option>
+    <option value="external territory">external territory</option>
+    <option value="federal republic">Federal Republic</option>
+    <option value="absolute monarchy">absolute monarchy</option>
+    <option value="people's republic">People's Republic</option>
+    <option value="socialist republic">Socialist Republic</option>
+    <option value="parliamentary federal republic">parliamentary federal republic</option>
+
+  </select>
 </div>
 
 
@@ -149,8 +190,7 @@ Scale and axis for main graph part
 
     // Create a scale object to nicely take care of positioning bars along the horizontal axis
     // We don't set the domain yet as data isn't loaded
-    var GovermentNames = new Array("islamic republic", "republic", "monarchy", "external territory"
-        , "federal republic", "absolute monarchy", "people's republic", "socialist republic", "parliamentary federal republic");
+ 
     var baryScale = d3.scale.ordinal()
       .range([0, 400], 0.1);
     var baryScale1 = d3.scale.ordinal()
@@ -434,8 +474,9 @@ function ChangeYear(x){
 function generateVis(data) {
 
   //console.log(data);
-  svg1.select("#rect").remove();
-  svg1.select("#title").remove();
+  svg1.selectAll("rect").remove();
+  svg1.selectAll("text").remove();
+
   // Filter the data to only include the current year
 
   /******** PERFORM DATA JOIN ************/
@@ -477,8 +518,8 @@ function generateVis(data) {
   function generateVis1(data) {
 
     //console.log(data);
-    svg2.select("#rect").remove();
-    svg2.select("#title").remove();
+      svg2.selectAll("rect").remove();
+    svg2.selectAll("text").remove();
     // Filter the data to only include the current year
 
     /******** PERFORM DATA JOIN ************/
