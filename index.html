@@ -4,6 +4,7 @@
 
   <meta charset="utf-8">
   <script src="https://d3js.org/d3.v3.min.js"></script>
+  <script type="text/javascript" src="./d3/d3.v4.js" charset="utf-8"></script>
   <script type="text/javascript" src="jquery.js"></script>
   <style type="text/css">
     .axis path,
@@ -139,41 +140,38 @@ Scale and axis for main graph part
 **********/
 //xscale for bar chart
  	// Create a scale to scale market share values nicely for bar heights
-    var baryScale = d3.scale.linear()
+    var barxScale = d3.scale.linear()
       .domain([60,0])
-      .range([svg_height-100,0]);
+      .range([svg_width-100,0]);
     
-    var baryScale1 = d3.scale.linear().domain([125,0]).range([svg_height-100,0]);
+    var barxScale1 = d3.scale.linear().domain([125,0]).range([svg_width-100,0]);
 
 
     // Create a scale object to nicely take care of positioning bars along the horizontal axis
     // We don't set the domain yet as data isn't loaded
     var GovermentNames = new Array("islamic republic", "republic", "monarchy", "external territory"
         , "federal republic", "absolute monarchy", "people's republic", "socialist republic", "parliamentary federal republic");
-    var barxScale = d3.scale.ordinal()
+    var baryScale = d3.scale.ordinal()
       .range([0, 400], 0.1);
-    var barxScale1 = d3.scale.ordinal()
+    var baryScale1 = d3.scale.ordinal()
         .range([0, 400], 0.1);
 
     //Define Y axis
-    var baryAxis = d3.svg.axis().scale(baryScale).ticks(5).orient("left");
-    var baryAxis1 = d3.svg.axis().scale(baryScale1).ticks(12).orient("left");
+    var barxAxis = d3.svg.axis().scale(baryScale).ticks(5).orient("left");
+    var baryAxis = d3.svg.axis().scale(barxScale).orient("top").ticks(10);
+
 
 
 
     // Create an x-axis connected to the x scale
-    var barxAxis = d3.svg.axis().scale(barxScale).orient("bottom");
-    var barxAxis1 = d3.svg.axis().scale(barxScale1).orient("bottom");
+    var baryAxis1 = d3.svg.axis().scale(barxScale1).orient("top").ticks(25);
+    var barxAxis1 = d3.svg.axis().scale(baryScale1).orient("left");
 
     // Call the y axis
     svg1.append("g")
       .attr("class", "axis")
       .attr("id", "y-axis")
-      .call(baryAxis)
-      .append("text")
-      .attr("transform", "rotate(-60)")
-      .style("text-anchor", "front")
-      .text("Regions");
+      ;
 
     // All but call the x-axis
     svg1.append("g")
@@ -186,11 +184,7 @@ Scale and axis for main graph part
   svg2.append("g")
     .attr("class", "axis")
     .attr("id", "y-axis")
-    .call(baryAxis1)
-    .append("text")
-    .attr("transform", "rotate(-60)")
-      .style("text-anchor", "front")
-    .text("Governments");
+    //.call(baryAxis1);
 
   // All but call the x-axis
   svg2.append("g")
@@ -455,28 +449,28 @@ function generateVis(data) {
 
   /******** HANDLE ENTER SELECTION ************/
   // Create new elements in the dataset
-  texts.enter()
-    .append("text")
-    .attr("x", function (d, i) {
-      return 52 * i;
-    })
-    .attr("y", 0)
-    .attr("fill", "black")
-    .html(function (d) {
-      return d[0];
-    });
+  
+  
+  
   bars.enter()
     .append("rect")
-    .attr("x", function (d,i) {
-      return 52*i;
+    .attr("y", function (d,i) {
+      return 50*i;
     })
-    .attr("y",0)
-    .attr("width", 37)
-    .attr("height", function (d) {
-      return baryScale(d[1]);
+    .attr("width", function (d) {
+      return barxScale(d[1]);
     })
+    .attr("height", 37)
     .style("fill", "Blue");
-
+  texts.enter()
+    .append("text")
+    .attr("y", function (d, i) {
+      return 50 * i + 25;
+    })
+    .attr("fill", "black")
+    .html(function (d) {
+      return "Regions: " + d[0] + " Number: " + d[1];
+    });
      
 }
 //bar chart No.2
@@ -498,31 +492,31 @@ function generateVis(data) {
     // Create new elements in the dataset
     bars.enter()
       .append("rect")
-      .attr("x", function (d, i) {
+      .attr("y", function (d, i) {
         return 45 * i;
       })
-      .attr("y", 0)
-      .attr("width", 39)
-      .attr("height", function (d) {
-        return baryScale1(d[1]);
+      .attr("width", function (d) {
+        return barxScale1(d[1]);
       })
+      .attr("height", 39)
       .style("fill", "Blue");
 
-      svg2.selectAll("text")
-          .data(data)
-          .enter()
-          .append("text")
-          .attr("fill", "black")
-          .attr("x", function (d, i) {
-            return 45 * i;
-          })
-          .attr("y", 0)
-          .html(function (d) {
-            return d[0];
-          });
+    svg2.selectAll("text")
+        .data(data)
+        .enter()
+        .append("text")
+        .attr("fill", "black")
+        .attr("y", function (d, i) {
+          return 45 * i+30;
+        })
+        .html(function (d) {
+          return "Government: " + d[0]+" Number: "+ d[1];
+        });
 
 
   }
+
+// give the default graph
 ChangeYear(0);
 
 
