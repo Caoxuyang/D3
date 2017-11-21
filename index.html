@@ -51,7 +51,7 @@
 </div>
 <div>
   
-
+  <!-- our new feature dropbox -->
   <select id="country" class="Area" onchange="dropdownChange(this.value)">
     <option value="Empty">--Region--</option>
     <option value="Asia">Asia</option>
@@ -136,11 +136,12 @@ var year = 1900;
 var keepRunning = true;
 
 var color = d3.scale.category10();
+
 /********************
 
 Scale and axis for main graph part
 
-**********/
+*********************/
 // scale for gdp and xaxis
 var xScale = d3.scale.linear().domain([60000, 0]).range([width, 0]),
 xAxis = d3.svg.axis().scale(xScale).orient("bottom").tickFormat(d3.format("d"));
@@ -184,10 +185,10 @@ yAxis = d3.svg.axis().scale(yScale).orient("left");
 
 /********************
 
-Scale and axis for main graph part
+Scale and axis for two bar charts part
 
 
-**********/
+***************/
 //xscale for bar chart
  	// Create a scale to scale market share values nicely for bar heights
     var barxScale = d3.scale.linear()
@@ -205,50 +206,47 @@ Scale and axis for main graph part
     var baryScale1 = d3.scale.ordinal()
         .range([0, 400], 0.1);
 
-    //Define Y axis
+    //Define axis for bar chart1
     var barxAxis = d3.svg.axis().scale(baryScale).ticks(5).orient("left");
     var baryAxis = d3.svg.axis().scale(barxScale).orient("top").ticks(10);
 
 
 
-
-    // Create an x-axis connected to the x scale
+    //Define axis for bar chart2
     var baryAxis1 = d3.svg.axis().scale(barxScale1).orient("top").ticks(25);
     var barxAxis1 = d3.svg.axis().scale(baryScale1).orient("left");
 
-    // Call the y axis
+    // Call the axises
     svg1.append("g")
       .attr("class", "axis")
-      .attr("id", "y-axis")
-      ;
+      .attr("id", "y-axis");
 
-    // All but call the x-axis
     svg1.append("g")
       .attr("class", "axis")
       .attr("id", "x-axis")
       .call(barxAxis);
 
 
-  // Call the y axis
+  // Call the axises
   svg2.append("g")
     .attr("class", "axis")
     .attr("id", "y-axis")
     //.call(baryAxis1);
 
-  // All but call the x-axis
   svg2.append("g")
     .attr("class", "axis")
     .attr("id", "x-axis")
     .call(barxAxis1);
 
-
-// function for travel from 1900 - 2016
+//change the value of the filter variables
 function dropdownChange(change){
   regionFilter = change;
 }
 function dropdownChange1(change){
   governmentFilter = change;
 }
+// function for travel from 1900 - 2016
+
 function Animation(){
   keepRunning = true;
   setInterval(function(){
@@ -263,7 +261,7 @@ function Animation(){
 
   
 }
-
+//stop the animation
 function stopRunning(){
   keepRunning = false;
 }
@@ -319,7 +317,7 @@ function ChangeYear(x){
       
       
      
-      
+      //filter the data : if the condition is empty --> give all the data
       data.forEach(function (d) {
         if (d.Year == y) {
         if(Countries.indexOf(d.Country) == -1 && regionFilter == "Empty" && governmentFilter=="Empty")
@@ -336,7 +334,7 @@ function ChangeYear(x){
         }
       });
       
-
+      // prepare GDP
       data.forEach(function(d){
         if (d.Year == y) {
           if (Countries.indexOf(d.Country)!=-1){
@@ -345,7 +343,7 @@ function ChangeYear(x){
           }
         }
       });
-
+      // prepare Life
       data.forEach(function(d){
       if (d.Year==y){
         if (Countries.indexOf(d.Country)!=-1){
@@ -358,6 +356,7 @@ function ChangeYear(x){
       }
       });
 
+      // prepare population
       data.forEach(function(d){
         if (d.Year == y) {
         if (Countries.indexOf(d.Country)!=-1){
@@ -367,7 +366,7 @@ function ChangeYear(x){
         }
       });
 
-      
+      // prepare Regions
       for (var c in Countries) {
         //console.log(Countries[c]);
         var notFound = true;
@@ -383,6 +382,8 @@ function ChangeYear(x){
           region.push("Unknown");
         }
       };
+
+      // prepare Governments
       for (var c in Countries) {
         //console.log(Countries[c]);
         var notFound = true;
@@ -473,7 +474,8 @@ function ChangeYear(x){
       var allData = d3.zip(Countries, yearGDP, yearHealth, yearPopulation, region,govern);
       var dataForBar1 = d3.zip(RegionNames,Regions);
       var dataForBar2 = d3.zip(GovermentNames,Goverment);
-      console.log(allData);
+      //console.log(allData);
+      //Draw two bar charts
       generateVis(dataForBar1);
       generateVis1(dataForBar2);
       //BarChart(dataForBar1,dataForBar2);
@@ -504,7 +506,7 @@ function ChangeYear(x){
         .style("opacity", 0.8);
 
         
-        //set the year and the position
+        //set the year
        d3.select("#newyear").text(y)
         
       });

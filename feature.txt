@@ -1,0 +1,5 @@
+Our own designed feature is that we add two filter to the web page.
+There are two filter dropbox to select a specific Region and/or Government type to view the dependancy graph between life and GDP of the countries filtered by these conditions.
+p.s. 
+1.Default options in these two boxes will give all the countries.
+2.After using the filter funcion, you can either look up the graph in a specific year you like or just let it do the animation.
