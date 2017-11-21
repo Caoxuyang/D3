@@ -50,34 +50,43 @@
     
 </div>
 <div>
-  <select id="country" class="Area" onchange="dropdownChange(this.value)">
-    <option value="None">--Region--</option>
-    <option value="Africa">Africa</option>
-    <option value="America">Americas</option>
-    <option value="Asia">Asia</option>
-    <option value="Australia">Australia</option>
-    <option value="Europe">Europe</option>
-  </select>
-    <select id="Govt" class="Government" onchange="dropdownChange1(this.value)">
-    <option value="None">-- Government--</option>
-    <option value="islamic republic">Islamic Republic</option>
-    <option value="Republic">Republic</option>
-    <option value="monarchy">Constitutional Monarchy</option>
-    <option value="external territory">external territory</option>
-    <option value="federal republic">Federal Republic</option>
-    <option value="absolute monarchy">absolute monarchy</option>
-    <option value="people's republic">People's Republic</option>
-    <option value="socialist republic">Socialist Republic</option>
-    <option value="parliamentary federal republic">parliamentary federal republic</option>
+  
 
+  <select id="country" class="Area" onchange="dropdownChange(this.value)">
+    <option value="Empty">--Region--</option>
+    <option value="Asia">Asia</option>
+    <option value="Europe">Europe</option>
+    <option value="Africa">Africa</option>
+    <option value="North America">North America</option>
+    <option value="Central America">Central America</option>
+    <option value="South America">South America</option>
+    <option value="Oceania">Oceania</option>
+    <option value="Australia">Australia</option>
   </select>
+  
+    <select id="Govt" class="Government" onchange="dropdownChange1(this.value)">
+    <option value="Empty">-- Government--</option>
+    <option value="islamic republic">islamic Republic</option>
+    <option value="republic">republic</option>
+    <option value="monarchy">constitutional monarchy</option>
+    <option value="external territory">external territory</option>
+    <option value="federal republic">federal republic</option>
+    <option value="absolute monarchy">absolute monarchy</option>
+    <option value="people's republic">people's republic</option>
+    <option value="socialist republic">socialist republic</option>
+    <option value="parliamentary federal republic">parliamentary federal republic</option>
+    <input name="AnimationButton" type="button" value="Go with the filtered countries" onclick="Animation()" />
+    <input name="Stop" type="button" value="Stop!" onclick="stopRunning()" />
+  </select>
+
 </div>
 
 
 <script type = "text/javascript" >
 
 var Data = "Gapminder_All_Time.csv";
-
+var regionFilter = "Empty";
+var governmentFilter = "Empty";
 //margin for main svg
 var margin = {top: 50, right: 20, bottom: 50, left: 50},
     width = 1000 - margin.left - margin.right,
@@ -234,6 +243,12 @@ Scale and axis for main graph part
 
 
 // function for travel from 1900 - 2016
+function dropdownChange(change){
+  regionFilter = change;
+}
+function dropdownChange1(change){
+  governmentFilter = change;
+}
 function Animation(){
   keepRunning = true;
   setInterval(function(){
@@ -284,11 +299,13 @@ function ChangeYear(x){
 
 
 
+
       //prepare the data for each country every year.
       var yearGDP = [];
       var yearHealth = [];
       var yearPopulation = [];
       var region = [];
+      var govern = [];
       var Countries = new Array();
       
       // 0-7 for Asia   Europe   Africa   North America   Central America   South America   Oceania   Australia
@@ -305,7 +322,16 @@ function ChangeYear(x){
       
       data.forEach(function (d) {
         if (d.Year == y) {
-        if(Countries.indexOf(d.Country) == -1)
+        if(Countries.indexOf(d.Country) == -1 && regionFilter == "Empty" && governmentFilter=="Empty")
+          Countries.push(d.Country);
+        }
+        else if(Countries.indexOf(d.Country) == -1 && regionFilter == "Empty" && d.Government == governmentFilter){
+          Countries.push(d.Country);
+        }
+        else if (Countries.indexOf(d.Country) == -1 && governmentFilter == "Empty" && d.Region == regionFilter) {
+          Countries.push(d.Country);
+        }
+        else if(Countries.indexOf(d.Country) == -1 && d.Region == regionFilter && d.Government == governmentFilter){
           Countries.push(d.Country);
         }
       });
@@ -355,6 +381,21 @@ function ChangeYear(x){
         });
         if (notFound) {
           region.push("Unknown");
+        }
+      };
+      for (var c in Countries) {
+        //console.log(Countries[c]);
+        var notFound = true;
+        data.forEach(function (d) {
+          if (notFound) {
+            if (d.Country == Countries[c]) {
+              govern.push(d.Government);
+              notFound = false;
+            }
+          }
+        });
+        if (notFound) {
+          govern.push("Unknown");
         }
       };
       
@@ -429,7 +470,7 @@ function ChangeYear(x){
 
      
       // It's like when year is 2016 allData for China is [China, China's GDP, Life, population, asia]
-      var allData = d3.zip(Countries, yearGDP, yearHealth, yearPopulation, region);
+      var allData = d3.zip(Countries, yearGDP, yearHealth, yearPopulation, region,govern);
       var dataForBar1 = d3.zip(RegionNames,Regions);
       var dataForBar2 = d3.zip(GovermentNames,Goverment);
       console.log(allData);
@@ -469,6 +510,25 @@ function ChangeYear(x){
       });
     
 };
+/*
+  function Region_filter(value) {
+    console.log(regionFilter + "   " + governmentFilter)
+    if (regionFilter == "Empty")
+      return value
+    else
+      s = value.Region
+    return (s == regionFilter)
+  }
+
+  function Government_filter(value) {
+      if (governmentFilter == "Empty")
+        return value
+      else
+        s = value.Government
+      return (s == government_select)
+    }
+    */
+  
 
 //Bar chart No.1
 function generateVis(data) {
